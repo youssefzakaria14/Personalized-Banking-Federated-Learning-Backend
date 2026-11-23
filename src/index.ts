@@ -1,5 +1,4 @@
-
-import express from "express";
+﻿import express from "express";
 import envConfig from "./config/env";
 import UserRouter from "./route/user.route";
 
