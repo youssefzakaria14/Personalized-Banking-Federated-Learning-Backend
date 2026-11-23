@@ -1,15 +1,25 @@
 {
+<<<<<<< HEAD
   "name": "backend",
+=======
+  "name": "graduation-project",
+>>>>>>> f7f64145fa693da339a0dadc99550c3bd33eb55f
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "dev": "tsx --watch src/index.ts",
     "build": "tsc"
+=======
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+>>>>>>> f7f64145fa693da339a0dadc99550c3bd33eb55f
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+<<<<<<< HEAD
   "type": "module",
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
@@ -26,5 +36,19 @@
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
     "jsonwebtoken": "^9.0.3"
+=======
+  "type": "commonjs",
+  "dependencies": {
+    "@prisma/client": "^7.10.1",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "prisma": "^8.0.0-rc.34"
+>>>>>>> f7f64145fa693da339a0dadc99550c3bd33eb55f
   }
 }
