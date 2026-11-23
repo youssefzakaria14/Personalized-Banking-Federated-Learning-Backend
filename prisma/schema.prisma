@@ -1,0 +1,533 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  schemas  = ["cairo", "cib", "misr", "nbe"]
+}
+
+model BANK1_CIB {
+  id                Int                  @id @default(autoincrement())
+  name              String
+  email             String               @unique
+  password          String
+  customers         CUSTOMER[]
+  financialProfiles FINANCIAL_PROFILES[]
+  loanApplications  LOAN_APPLICATION[]
+  loanHistories     LOAN_HISTORY[]
+  transactions      TRANSACTION[]
+  repayments        Rerepayment[]
+
+  @@schema("cib")
+}
+
+model CUSTOMER {
+  id                String               @id
+  name              String
+  age               Int
+  email             String               @unique
+  gender            String
+  password          String
+  monthly_income    Float
+  employment_status String
+  occupation        String
+  education         String
+  marital_status    String
+  monthly_expenses  Float
+  savings           Float
+  existing_debt     Float
+  city              String
+  customer_since    DateTime
+  bankId            Int
+  bank              BANK1_CIB            @relation(fields: [bankId], references: [id])
+  financialProfiles FINANCIAL_PROFILES[]
+  loanApplications  LOAN_APPLICATION[]
+  loanHistories     LOAN_HISTORY[]
+  transactions      TRANSACTION[]
+  repayments        Rerepayment[]
+
+  @@schema("cib")
+}
+
+model FINANCIAL_PROFILES {
+  avg_monthly_income                  Float
+  estimated_monthly_transaction_spend Float
+  top_spending_category               String
+  savings_to_income_ratio             Float
+  debt_to_income_ratio                Float
+  financial_health_band               String
+  bankId                              Int
+  customerId                          String
+  bank                                BANK1_CIB @relation(fields: [bankId], references: [id])
+  customer                            CUSTOMER  @relation(fields: [customerId], references: [id])
+
+  @@id([customerId, bankId])
+  @@schema("cib")
+}
+
+model LOAN_APPLICATION {
+  application_id         String         @id
+  requested_loan_amount  Float
+  loan_duration_months   Int
+  monthly_income         Float
+  monthly_expenses       Float
+  savings                Float
+  existing_debt          Float
+  debt_to_income_ratio   Float
+  employment_status      String
+  previous_late_payments Boolean
+  default_status         Boolean
+  bankId                 Int
+  customerId             String
+  bank                   BANK1_CIB      @relation(fields: [bankId], references: [id])
+  customer               CUSTOMER       @relation(fields: [customerId], references: [id])
+  loanHistories          LOAN_HISTORY[]
+
+  @@schema("cib")
+}
+
+model LOAN_HISTORY {
+  loan_id              String           @id
+  loan_amount          Float
+  loan_duration_months Int
+  interest_rate_pct    Float
+  monthly_installment  Float
+  late_payments        Int
+  default_status       Boolean
+  application_id       String
+  bankId               Int
+  customerId           String
+  application          LOAN_APPLICATION @relation(fields: [application_id], references: [application_id])
+  bank                 BANK1_CIB        @relation(fields: [bankId], references: [id])
+  customer             CUSTOMER         @relation(fields: [customerId], references: [id])
+  repayments           Rerepayment[]
+
+  @@schema("cib")
+}
+
+model Rerepayment {
+  repayment_id       String       @id
+  installment_number Int
+  due_date           DateTime
+  payment_date       DateTime?
+  installment_amount Float
+  payment_status     String
+  loan_id            String
+  bankId             Int
+  customerId         String
+  bank               BANK1_CIB    @relation(fields: [bankId], references: [id])
+  customer           CUSTOMER     @relation(fields: [customerId], references: [id])
+  loan               LOAN_HISTORY @relation(fields: [loan_id], references: [loan_id])
+
+  @@map("rerepayment")
+  @@schema("cib")
+}
+
+model TRANSACTION {
+  transaction_id            String    @id
+  transaction_date          DateTime
+  amount                    Float
+  category                  String
+  transaction_type          String
+  balance_after_transaction Float
+  bankId                    Int
+  customerId                String
+  bank                      BANK1_CIB @relation(fields: [bankId], references: [id])
+  customer                  CUSTOMER  @relation(fields: [customerId], references: [id])
+
+  @@schema("cib")
+}
+
+model BANK2_NATURAL_BANK_OF_EGYPT {
+  id                Int                      @id @default(autoincrement())
+  name              String
+  email             String                   @unique
+  password          String
+  customers         NBE_CUSTOMER[]
+  financialProfiles NBE_FINANCIAL_PROFILES[]
+  loanApplications  NBE_LOAN_APPLICATION[]
+  loanHistories     NBE_LOAN_HISTORY[]
+  repayments        NBE_REPAYMENT[]
+  transactions      NBE_TRANSACTION[]
+
+  @@schema("nbe")
+}
+
+model NBE_CUSTOMER {
+  id                String                      @id
+  name              String
+  age               Int
+  email             String                      @unique
+  gender            String
+  password          String
+  monthly_income    Float
+  employment_status String
+  occupation        String
+  education         String
+  marital_status    String
+  monthly_expenses  Float
+  savings           Float
+  existing_debt     Float
+  city              String
+  customer_since    DateTime
+  bankId            Int
+  bank              BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
+  financialProfiles NBE_FINANCIAL_PROFILES[]
+  loanApplications  NBE_LOAN_APPLICATION[]
+  loanHistories     NBE_LOAN_HISTORY[]
+  repayments        NBE_REPAYMENT[]
+  transactions      NBE_TRANSACTION[]
+
+  @@schema("nbe")
+}
+
+model NBE_FINANCIAL_PROFILES {
+  avg_monthly_income                  Float
+  estimated_monthly_transaction_spend Float
+  top_spending_category               String
+  savings_to_income_ratio             Float
+  debt_to_income_ratio                Float
+  financial_health_band               String
+  bankId                              Int
+  customerId                          String
+  bank                                BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
+  customer                            NBE_CUSTOMER                @relation(fields: [customerId], references: [id])
+
+  @@id([customerId, bankId])
+  @@schema("nbe")
+}
+
+model NBE_LOAN_APPLICATION {
+  application_id         String                      @id
+  requested_loan_amount  Float
+  loan_duration_months   Int
+  monthly_income         Float
+  monthly_expenses       Float
+  savings                Float
+  existing_debt          Float
+  debt_to_income_ratio   Float
+  employment_status      String
+  previous_late_payments Boolean
+  default_status         Boolean
+  bankId                 Int
+  customerId             String
+  bank                   BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
+  customer               NBE_CUSTOMER                @relation(fields: [customerId], references: [id])
+  loanHistories          NBE_LOAN_HISTORY[]
+
+  @@schema("nbe")
+}
+
+model NBE_LOAN_HISTORY {
+  loan_id              String                      @id
+  loan_duration_months Int
+  interest_rate_pct    Float
+  monthly_installment  Float
+  late_payments        Int
+  default_status       Boolean
+  application_id       String
+  bankId               Int
+  customerId           String
+  application          NBE_LOAN_APPLICATION        @relation(fields: [application_id], references: [application_id])
+  bank                 BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
+  customer             NBE_CUSTOMER                @relation(fields: [customerId], references: [id])
+  repayments           NBE_REPAYMENT[]
+
+  @@schema("nbe")
+}
+
+model NBE_REPAYMENT {
+  repayment_id       String                      @id
+  installment_number Int
+  due_date           DateTime
+  payment_date       DateTime?
+  installment_amount Float
+  payment_status     String
+  loan_id            String
+  bankId             Int
+  customerId         String
+  bank               BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
+  customer           NBE_CUSTOMER                @relation(fields: [customerId], references: [id])
+  loan               NBE_LOAN_HISTORY            @relation(fields: [loan_id], references: [loan_id])
+
+  @@schema("nbe")
+}
+
+model NBE_TRANSACTION {
+  transaction_id            String                      @id
+  transaction_date          DateTime
+  amount                    Float
+  category                  String
+  transaction_type          String
+  balance_after_transaction Float
+  bankId                    Int
+  customerId                String
+  bank                      BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
+  customer                  NBE_CUSTOMER                @relation(fields: [customerId], references: [id])
+
+  @@schema("nbe")
+}
+
+model BANK3_MISR_BANK {
+  id                Int                       @id @default(autoincrement())
+  name              String
+  email             String                    @unique
+  password          String
+  customers         MISR_CUSTOMER[]
+  financialProfiles MISR_FINANCIAL_PROFILES[]
+  loanApplications  MISR_LOAN_APPLICATION[]
+  loanHistories     MISR_LOAN_HISTORY[]
+  repayments        MISR_REPAYMENT[]
+  transactions      MISR_TRANSACTION[]
+
+  @@schema("misr")
+}
+
+model MISR_CUSTOMER {
+  id                String                    @id
+  name              String
+  age               Int
+  email             String                    @unique
+  gender            String
+  password          String
+  monthly_income    Float
+  employment_status String
+  occupation        String
+  education         String
+  marital_status    String
+  monthly_expenses  Float
+  savings           Float
+  existing_debt     Float
+  city              String
+  customer_since    DateTime
+  bankId            Int
+  bank              BANK3_MISR_BANK           @relation(fields: [bankId], references: [id])
+  financialProfiles MISR_FINANCIAL_PROFILES[]
+  loanApplications  MISR_LOAN_APPLICATION[]
+  loanHistories     MISR_LOAN_HISTORY[]
+  repayments        MISR_REPAYMENT[]
+  transactions      MISR_TRANSACTION[]
+
+  @@schema("misr")
+}
+
+model MISR_FINANCIAL_PROFILES {
+  avg_monthly_income                  Float
+  estimated_monthly_transaction_spend Float
+  top_spending_category               String
+  savings_to_income_ratio             Float
+  debt_to_income_ratio                Float
+  financial_health_band               String
+  bankId                              Int
+  customerId                          String
+  bank                                BANK3_MISR_BANK @relation(fields: [bankId], references: [id])
+  customer                            MISR_CUSTOMER   @relation(fields: [customerId], references: [id])
+
+  @@id([customerId, bankId])
+  @@schema("misr")
+}
+
+model MISR_LOAN_APPLICATION {
+  application_id         String              @id
+  requested_loan_amount  Float
+  loan_duration_months   Int
+  monthly_income         Float
+  monthly_expenses       Float
+  savings                Float
+  existing_debt          Float
+  debt_to_income_ratio   Float
+  employment_status      String
+  previous_late_payments Boolean
+  default_status         Boolean
+  bankId                 Int
+  customerId             String
+  bank                   BANK3_MISR_BANK     @relation(fields: [bankId], references: [id])
+  customer               MISR_CUSTOMER       @relation(fields: [customerId], references: [id])
+  loanHistories          MISR_LOAN_HISTORY[]
+
+  @@schema("misr")
+}
+
+model MISR_LOAN_HISTORY {
+  loan_id              String                @id
+  loan_amount          Float
+  loan_duration_months Int
+  interest_rate_pct    Float
+  monthly_installment  Float
+  late_payments        Int
+  default_status       Boolean
+  application_id       String
+  bankId               Int
+  customerId           String
+  application          MISR_LOAN_APPLICATION @relation(fields: [application_id], references: [application_id])
+  bank                 BANK3_MISR_BANK       @relation(fields: [bankId], references: [id])
+  customer             MISR_CUSTOMER         @relation(fields: [customerId], references: [id])
+  repayments           MISR_REPAYMENT[]
+
+  @@schema("misr")
+}
+
+model MISR_REPAYMENT {
+  repayment_id       String            @id
+  installment_number Int
+  due_date           DateTime
+  payment_date       DateTime?
+  installment_amount Float
+  payment_status     String
+  loan_id            String
+  bankId             Int
+  customerId         String
+  bank               BANK3_MISR_BANK   @relation(fields: [bankId], references: [id])
+  customer           MISR_CUSTOMER     @relation(fields: [customerId], references: [id])
+  loan               MISR_LOAN_HISTORY @relation(fields: [loan_id], references: [loan_id])
+
+  @@schema("misr")
+}
+
+model MISR_TRANSACTION {
+  transaction_id            String          @id
+  transaction_date          DateTime
+  amount                    Float
+  category                  String
+  transaction_type          String
+  balance_after_transaction Float
+  bankId                    Int
+  customerId                String
+  bank                      BANK3_MISR_BANK @relation(fields: [bankId], references: [id])
+  customer                  MISR_CUSTOMER   @relation(fields: [customerId], references: [id])
+
+  @@schema("misr")
+}
+
+model BANK4_CAIRO_BANK {
+  id                Int                     @id @default(autoincrement())
+  name              String
+  email             String                  @unique
+  password          String
+  customers         CB_CUSTOMER[]
+  financialProfiles CB_FINANCIAL_PROFILES[]
+  loanApplications  CB_LOAN_APPLICATION[]
+  loanHistories     CB_LOAN_HISTORY[]
+  repayments        CB_REPAYMENT[]
+  transactions      CB_TRANSACTION[]
+
+  @@schema("cairo")
+}
+
+model CB_CUSTOMER {
+  id                String                  @id
+  name              String
+  age               Int
+  email             String                  @unique
+  gender            String
+  password          String
+  monthly_income    Float
+  employment_status String
+  occupation        String
+  education         String
+  marital_status    String
+  monthly_expenses  Float
+  savings           Float
+  existing_debt     Float
+  city              String
+  customer_since    DateTime
+  bankId            Int
+  bank              BANK4_CAIRO_BANK        @relation(fields: [bankId], references: [id])
+  financialProfiles CB_FINANCIAL_PROFILES[]
+  loanApplications  CB_LOAN_APPLICATION[]
+  loanHistories     CB_LOAN_HISTORY[]
+  repayments        CB_REPAYMENT[]
+  transactions      CB_TRANSACTION[]
+
+  @@schema("cairo")
+}
+
+model CB_FINANCIAL_PROFILES {
+  avg_monthly_income                  Float
+  estimated_monthly_transaction_spend Float
+  top_spending_category               String
+  savings_to_income_ratio             Float
+  debt_to_income_ratio                Float
+  financial_health_band               String
+  bankId                              Int
+  customerId                          String
+  bank                                BANK4_CAIRO_BANK @relation(fields: [bankId], references: [id])
+  customer                            CB_CUSTOMER      @relation(fields: [customerId], references: [id])
+
+  @@id([customerId, bankId])
+  @@schema("cairo")
+}
+
+model CB_LOAN_APPLICATION {
+  application_id         String            @id
+  requested_loan_amount  Float
+  loan_duration_months   Int
+  monthly_income         Float
+  monthly_expenses       Float
+  savings                Float
+  existing_debt          Float
+  debt_to_income_ratio   Float
+  employment_status      String
+  previous_late_payments Boolean
+  default_status         Boolean
+  bankId                 Int
+  customerId             String
+  bank                   BANK4_CAIRO_BANK  @relation(fields: [bankId], references: [id])
+  customer               CB_CUSTOMER       @relation(fields: [customerId], references: [id])
+  loanHistories          CB_LOAN_HISTORY[]
+
+  @@schema("cairo")
+}
+
+model CB_LOAN_HISTORY {
+  loan_id              String              @id
+  loan_amount          Float
+  loan_duration_months Int
+  interest_rate_pct    Float
+  monthly_installment  Float
+  late_payments        Int
+  default_status       Boolean
+  application_id       String
+  bankId               Int
+  customerId           String
+  application          CB_LOAN_APPLICATION @relation(fields: [application_id], references: [application_id])
+  bank                 BANK4_CAIRO_BANK    @relation(fields: [bankId], references: [id])
+  customer             CB_CUSTOMER         @relation(fields: [customerId], references: [id])
+  repayments           CB_REPAYMENT[]
+
+  @@schema("cairo")
+}
+
+model CB_REPAYMENT {
+  repayment_id       String           @id
+  installment_number Int
+  due_date           DateTime
+  payment_date       DateTime?
+  installment_amount Float
+  payment_status     String
+  loan_id            String
+  bankId             Int
+  customerId         String
+  bank               BANK4_CAIRO_BANK @relation(fields: [bankId], references: [id])
+  customer           CB_CUSTOMER      @relation(fields: [customerId], references: [id])
+  loan               CB_LOAN_HISTORY  @relation(fields: [loan_id], references: [loan_id])
+
+  @@schema("cairo")
+}
+
+model CB_TRANSACTION {
+  transaction_id            String           @id
+  transaction_date          DateTime
+  amount                    Float
+  category                  String
+  transaction_type          String
+  balance_after_transaction Float
+  bankId                    Int
+  customerId                String
+  bank                      BANK4_CAIRO_BANK @relation(fields: [bankId], references: [id])
+  customer                  CB_CUSTOMER      @relation(fields: [customerId], references: [id])
+
+  @@schema("cairo")
+}
