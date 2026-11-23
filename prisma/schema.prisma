@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   
+  email     String   @unique
+  password  String
+  gender    Boolean  @default(true) // true: male | false: female
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
