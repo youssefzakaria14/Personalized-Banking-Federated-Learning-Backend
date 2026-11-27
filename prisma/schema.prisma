@@ -1,11 +1,10 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  schemas  = ["cairo", "cib", "misr", "nbe"]
+  schemas  = ["cairo", "cib", "misr", "nbe", "public"]
 }
 
 model BANK1_CIB {
@@ -108,18 +107,18 @@ model LOAN_HISTORY {
 }
 
 model Rerepayment {
-  repayment_id       String       @id
-  installment_number Int
-  due_date           DateTime
-  payment_date       DateTime?
-  installment_amount Float
-  payment_status     String
-  loan_id            String
-  bankId             Int
-  customerId         String
-  bank               BANK1_CIB    @relation(fields: [bankId], references: [id])
-  customer           CUSTOMER     @relation(fields: [customerId], references: [id])
-  loan               LOAN_HISTORY @relation(fields: [loan_id], references: [loan_id])
+  repayment_id        String       @id
+  installment_number  Int
+  due_date            DateTime
+  payment_date        DateTime?
+  installment_amount  Float
+  payment_status      String
+  loan_id             String
+  bankId              Int
+  customerId          String
+  bank                BANK1_CIB    @relation(fields: [bankId], references: [id])
+  customer            CUSTOMER     @relation(fields: [customerId], references: [id])
+  loan                LOAN_HISTORY @relation(fields: [loan_id], references: [loan_id])
 
   @@map("rerepayment")
   @@schema("cib")
@@ -239,18 +238,18 @@ model NBE_LOAN_HISTORY {
 }
 
 model NBE_REPAYMENT {
-  repayment_id       String                      @id
-  installment_number Int
-  due_date           DateTime
-  payment_date       DateTime?
-  installment_amount Float
-  payment_status     String
-  loan_id            String
-  bankId             Int
-  customerId         String
-  bank               BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
-  customer           NBE_CUSTOMER                @relation(fields: [customerId], references: [id])
-  loan               NBE_LOAN_HISTORY            @relation(fields: [loan_id], references: [loan_id])
+  repayment_id        String                      @id
+  installment_number  Int
+  due_date            DateTime
+  payment_date        DateTime?
+  installment_amount  Float
+  payment_status      String
+  loan_id             String
+  bankId              Int
+  customerId          String
+  bank                BANK2_NATURAL_BANK_OF_EGYPT @relation(fields: [bankId], references: [id])
+  customer            NBE_CUSTOMER                @relation(fields: [customerId], references: [id])
+  loan                NBE_LOAN_HISTORY            @relation(fields: [loan_id], references: [loan_id])
 
   @@schema("nbe")
 }
@@ -370,18 +369,18 @@ model MISR_LOAN_HISTORY {
 }
 
 model MISR_REPAYMENT {
-  repayment_id       String            @id
-  installment_number Int
-  due_date           DateTime
-  payment_date       DateTime?
-  installment_amount Float
-  payment_status     String
-  loan_id            String
-  bankId             Int
-  customerId         String
-  bank               BANK3_MISR_BANK   @relation(fields: [bankId], references: [id])
-  customer           MISR_CUSTOMER     @relation(fields: [customerId], references: [id])
-  loan               MISR_LOAN_HISTORY @relation(fields: [loan_id], references: [loan_id])
+  repayment_id        String            @id
+  installment_number  Int
+  due_date            DateTime
+  payment_date        DateTime?
+  installment_amount  Float
+  payment_status      String
+  loan_id             String
+  bankId              Int
+  customerId          String
+  bank                BANK3_MISR_BANK   @relation(fields: [bankId], references: [id])
+  customer            MISR_CUSTOMER     @relation(fields: [customerId], references: [id])
+  loan                MISR_LOAN_HISTORY @relation(fields: [loan_id], references: [loan_id])
 
   @@schema("misr")
 }
@@ -501,18 +500,18 @@ model CB_LOAN_HISTORY {
 }
 
 model CB_REPAYMENT {
-  repayment_id       String           @id
-  installment_number Int
-  due_date           DateTime
-  payment_date       DateTime?
-  installment_amount Float
-  payment_status     String
-  loan_id            String
-  bankId             Int
-  customerId         String
-  bank               BANK4_CAIRO_BANK @relation(fields: [bankId], references: [id])
-  customer           CB_CUSTOMER      @relation(fields: [customerId], references: [id])
-  loan               CB_LOAN_HISTORY  @relation(fields: [loan_id], references: [loan_id])
+  repayment_id        String           @id
+  installment_number  Int
+  due_date            DateTime
+  payment_date        DateTime?
+  installment_amount  Float
+  payment_status      String
+  loan_id             String
+  bankId              Int
+  customerId          String
+  bank                BANK4_CAIRO_BANK @relation(fields: [bankId], references: [id])
+  customer            CB_CUSTOMER      @relation(fields: [customerId], references: [id])
+  loan                CB_LOAN_HISTORY  @relation(fields: [loan_id], references: [loan_id])
 
   @@schema("cairo")
 }
@@ -530,4 +529,13 @@ model CB_TRANSACTION {
   customer                  CB_CUSTOMER      @relation(fields: [customerId], references: [id])
 
   @@schema("cairo")
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+
+  @@map("admins")
+  @@schema("public")
 }
